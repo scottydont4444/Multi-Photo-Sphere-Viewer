@@ -417,11 +417,44 @@ var PhotoSphereViewer = function(args) {
 		var onLoad = function(img) {
 			texture.needsUpdate = true;
 			texture.image = img;
-
-			createScene(texture);
+			console.log(spheres);
+			if(spheres.length<1)
+				createScene();
+			createSphere(texture);
 		};
 
 		loader.load(path, onLoad);
+	};
+	
+	/**
+	 * Moves to a specific position
+	 * @public
+	 * @private
+	 * @param {THREE.Texture} texture - The sphere texture
+	 * @return {void}
+	 **/
+	this.newSphere = function(img) {
+		panorama = img;
+		loadXMP();
+	};
+	
+	/**
+	 * Creates a sphere andadds it to the scene
+	 * @private
+	 * @param {string} - Panorama URL or path (absolute or relative)
+	 * @return {void}
+	 **/
+	var createSphere = function(texture){
+		 // Sphere
+		var geometry = new THREE.SphereGeometry(200, 32, 32);
+		var material = new THREE.MeshBasicMaterial({map: texture, overdraw: true});
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.translateY(400*spheres.length);
+		camera.position.set(0, 400*spheres.length, 0);
+		mesh.scale.x = -1;
+		spheres.push(mesh);
+		scene.add(mesh);
+		render();
 	};
 
 	/**
@@ -431,7 +464,7 @@ var PhotoSphereViewer = function(args) {
 	 * @return {void}
 	 **/
 
-	var createScene = function(texture) {
+	var createScene = function() {
 		// New size?
 		if (new_viewer_size.width !== undefined)
 			container.style.width = new_viewer_size.width.css;
@@ -450,13 +483,6 @@ var PhotoSphereViewer = function(args) {
 		camera = new THREE.PerspectiveCamera(PSV_FOV_MAX, viewer_size.ratio, 1, 300);
 		camera.position.set(0, 0, 0);
 		scene.add(camera);
-
-		// Sphere
-		var geometry = new THREE.SphereGeometry(200, 32, 32);
-		var material = new THREE.MeshBasicMaterial({map: texture, overdraw: true});
-		var mesh = new THREE.Mesh(geometry, material);
-		mesh.scale.x = -1;
-		scene.add(mesh);
 
 		// Canvas container
 		canvas_container = document.createElement('div');
@@ -831,7 +857,8 @@ var PhotoSphereViewer = function(args) {
 	this.moveTo = function(longitude, latitude) {
 		moveTo(longitude, latitude);
 	};
-
+	
+	
 	/**
 	 * The user wants to move.
 	 * @private
@@ -1544,7 +1571,9 @@ var PhotoSphereViewer = function(args) {
 	var autorotate_timeout = null, anim_timeout = null;
 
 	var sphoords = new Sphoords();
-
+	
+	var spheres =[];
+	
 	var actions = {};
 
 	// Do we have to read XMP data?
