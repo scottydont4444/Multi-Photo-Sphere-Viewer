@@ -449,11 +449,12 @@ var PhotoSphereViewer = function(args) {
 		var geometry = new THREE.SphereGeometry(200, 32, 32);
 		var material = new THREE.MeshBasicMaterial({map: texture, overdraw: true});
 		var mesh = new THREE.Mesh(geometry, material);
-		mesh.translateY(400*spheres.length);
-		camera.position.set(0, 400*spheres.length, 0);
+		mesh.translateY(sphereSeperation*spheres.length);
+		camera.position.set(0, sphereSeperation*spheres.length, 0);
 		mesh.scale.x = -1;
 		spheres.push(mesh);
 		scene.add(mesh);
+		currentSphere = spheres.length-1;
 		render();
 	};
 
@@ -557,7 +558,7 @@ var PhotoSphereViewer = function(args) {
 	var render = function() {
 		var point = new THREE.Vector3();
 		point.setX(Math.cos(lat) * Math.sin(long));
-		point.setY(Math.sin(lat));
+		point.setY(Math.sin(lat)+sphereSeperation*currentSphere);
 		point.setZ(Math.cos(lat) * Math.cos(long));
 
 		camera.lookAt(point);
@@ -1573,6 +1574,9 @@ var PhotoSphereViewer = function(args) {
 	var sphoords = new Sphoords();
 	
 	var spheres =[];
+	var currentSphere = 0;
+	
+	var sphereSeperation = 200;
 	
 	var actions = {};
 
