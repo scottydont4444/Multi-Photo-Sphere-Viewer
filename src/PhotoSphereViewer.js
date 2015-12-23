@@ -457,6 +457,19 @@ var PhotoSphereViewer = function(args) {
 		currentSphere = spheres.length-1;
 		render();
 	};
+	
+	var handleKeypress = function(e){
+		var code = (e.keyCode ? e.keyCode : e.which);
+		if (code >= 49 && code<=57)
+			goToSphere(code -49);
+		console.log(code);
+	}
+	
+	var goToSphere = function(id){
+		camera.position.set(0, sphereSeperation*id, 0);
+		currentSphere = id;
+		render();
+	}
 
 	/**
 	 * Creates the 3D scene.
@@ -510,7 +523,8 @@ var PhotoSphereViewer = function(args) {
 			addEvent(canvas_container, 'touchstart', onTouchStart);
 			addEvent(document, 'touchend', onMouseUp);
 			addEvent(document, 'touchmove', onTouchMove);
-
+			addEvent(document, 'keypress', handleKeypress);
+			
 			if (scroll_to_zoom) {
 				addEvent(canvas_container, 'mousewheel', onMouseWheel);
 				addEvent(canvas_container, 'DOMMouseScroll', onMouseWheel);
@@ -557,9 +571,9 @@ var PhotoSphereViewer = function(args) {
 
 	var render = function() {
 		var point = new THREE.Vector3();
-		point.setX(Math.cos(lat) * Math.sin(long));
-		point.setY(Math.sin(lat)+sphereSeperation*currentSphere);
-		point.setZ(Math.cos(lat) * Math.cos(long));
+		point.setX(Math.cos(lat) * Math.sin(long)+camera.position.x);
+		point.setY(Math.sin(lat)+camera.position.y);
+		point.setZ(Math.cos(lat) * Math.cos(long)+camera.position.z);
 
 		camera.lookAt(point);
 
@@ -1576,7 +1590,7 @@ var PhotoSphereViewer = function(args) {
 	var spheres =[];
 	var currentSphere = 0;
 	
-	var sphereSeperation = 200;
+	var sphereSeperation = 400;
 	
 	var actions = {};
 
