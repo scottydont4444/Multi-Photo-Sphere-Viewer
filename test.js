@@ -1,10 +1,21 @@
 window.onload = function() {
 	document.getElementById('go').addEventListener('click', loadPredefinedPanorama, false);
-
 	document.getElementById('pano').addEventListener('change', upload, false);
+	document.addEventListener('keydown', handleKeyup, false);
 };
 
 var PSV;
+
+function handleKeyup(e) { 
+	var code = (e.keyCode ? e.keyCode : e.which);
+	console.log(code);
+	if (code >= 49 && code<=57)
+		PSV.changeSphere(code -49);
+	if (code == 13) {
+        PSV.addMarker(document.getElementById('linkName').value);
+		e.preventDefault();
+	}	
+}
 // Load the predefined panorama
 function loadPredefinedPanorama(evt) {
 	evt.preventDefault();

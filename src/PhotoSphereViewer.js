@@ -458,11 +458,61 @@ var PhotoSphereViewer = function(args) {
 		render();
 	};
 	
-	var handleKeypress = function(e){
-		var code = (e.keyCode ? e.keyCode : e.which);
-		if (code >= 49 && code<=57)
-			goToSphere(code -49);
-		console.log(code);
+	this.addMarker = function(title) {
+		makeNewMarker(title)
+	};
+	
+	var makeNewMarker = function(text){
+		
+		var text3d = new THREE.TextGeometry( text, {
+
+					size: 5,
+					height: .25,
+					weight: "normal",
+					curveSegments: 2,
+					font: "helvetiker"
+
+				});
+		var material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+
+		text3d.computeBoundingBox();
+		var xOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+		var yOffset = -0.5 * ( text3d.boundingBox.max.y - text3d.boundingBox.min.y );	
+		var padding = 5;
+		
+		text = new THREE.Mesh( text3d, material );
+		text.translateY(sphereSeperation*currentSphere);
+		text.rotation.x = (camera.rotation['_x']);
+		text.rotation.y = (camera.rotation['_y']);
+		text.rotation.z = (camera.rotation['_z']);
+		text.translateZ(-99);
+		
+		text.translateX(xOffset);
+		text.translateY(yOffset+1);
+		scene.add( text );
+		
+		var geometry = new THREE.BoxGeometry( -2*xOffset+(2*padding), -2* yOffset+(2* padding), 1 );
+		//geometry.translate(1,1,1);
+		var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+		var cube = new THREE.Mesh( geometry, material );
+		cube.translateY(sphereSeperation*currentSphere);
+		cube.rotation.x = (camera.rotation['_x']);
+		cube.rotation.y = (camera.rotation['_y']);
+		cube.rotation.z = (camera.rotation['_z']);
+		cube.translateZ(-100);
+		scene.add( cube );
+
+		/*group = new THREE.Group();
+		group.add( text );
+
+		scene.add( group );*/
+
+		render();
+		
+	};
+	
+	this.changeSphere = function (id){
+		goToSphere(id)
 	}
 	
 	var goToSphere = function(id){
@@ -523,7 +573,6 @@ var PhotoSphereViewer = function(args) {
 			addEvent(canvas_container, 'touchstart', onTouchStart);
 			addEvent(document, 'touchend', onMouseUp);
 			addEvent(document, 'touchmove', onTouchMove);
-			addEvent(document, 'keypress', handleKeypress);
 			
 			if (scroll_to_zoom) {
 				addEvent(canvas_container, 'mousewheel', onMouseWheel);
